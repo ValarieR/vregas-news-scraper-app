@@ -2,11 +2,9 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
-
-// Our scraping tools
-// Axios is a promised-based http library, similar to jQuery's Ajax method
-// It works on the client and on the server
-var axios = require("axios");
+var path = require("path");
+var hbars = require('express-handlebars');
+var request = require("request");
 var cheerio = require("cheerio");
 
 // Require all models
@@ -16,8 +14,6 @@ var PORT = 3000;
 
 // Initialize Express
 var app = express();
-
-// Configure middleware
 
 // Use morgan logger for logging requests
 app.use(logger("dev"));
@@ -29,8 +25,15 @@ app.use(express.static("public"));
 // Set mongoose to leverage built in JavaScript ES6 Promises
 // Connect to the Mongo DB
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/week18Populater", {
+mongoose.connect("mongodb://localhost/wussy", {
     useMongoClient: true
+});
+
+//Mongoose - success message upon database connection
+var mdb = mongoose.connection;
+mdb.on('error', console.error.bind(console, 'connection error:'));
+mdb.once('open', function() {
+    console.log("DB is running on local host")
 });
 
 app.set('views', path.join(__dirname, 'views'));
@@ -42,9 +45,9 @@ app.set("view engine", "handlebars");
 // A GET route for scraping the website
 app.get("/scrape", function(req, res) {
     // First, we grab the body of the html with request
-    axios.get("http://www.wussymag.com/").then(function(response) {
+    request("http://www.wussymag.com/", function(error, response, html) {
         // Then, we load that into cheerio and save it to $ for a shorthand selector
-        var $ = cheerio.load(response.data);
+        var $ = cheerio.load(html);
         // Now, we grab every article by class within an article tag, and do the following:
         $(".summary-title").each(function(i, element) {
             // Save an empty result object
@@ -57,6 +60,9 @@ app.get("/scrape", function(req, res) {
             result.link = $(this)
                 .children("a")
                 .attr("href");
+            result.summary = $(this)
+                .children("p")
+                .text();
 
             // Create a new Article using the `result` object built from scraping
             db.Article
@@ -64,6 +70,7 @@ app.get("/scrape", function(req, res) {
                 .then(function(dbArticle) {
                     // If we were able to successfully scrape and save an Article, send a message to the client
                     res.send("Scrape Complete");
+                    console.log(dbArticle);
                 })
                 .catch(function(err) {
                     // If an error occurred, send it to the client
