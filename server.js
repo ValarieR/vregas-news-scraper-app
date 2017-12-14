@@ -78,17 +78,42 @@ app.get("/articles", function (req, res) {
     
     db.Article.find({})
         .then(function (dbArticle) {
-            res.json(dbArticle)
+            res.json(dbArticle);
         })
         .catch(function (err) {
-            res.json(err)
+            res.json(err);
         });
 });
 
 //route to grab an article by id and it's note
 app.get("articles/:id", function (req, res) {
-    
-})
+
+    db.Article.findOne({_id: req.params.id})
+        .populate("note")
+        .then(function (dbArticle) {
+            res.send(dbArticle);
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
+});
+
+//route for updating an article's associated note
+app.post("/articles/:id", function (req, res) {
+
+    db.Note.create(req.body)
+        .then(function (dbNote) {
+            return db.Article.findOneAndUpdate({_id: req.params.id}),
+                {note: dbNote._id},
+                {new: true};
+        })
+        .then(function (dbArticle) {
+            res.join(dbArticle);
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
+});
 
 
 // Start the server
