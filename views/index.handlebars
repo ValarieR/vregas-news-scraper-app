@@ -1,0 +1,16 @@
+<div class="wrapper">
+    {{#each scraped}}
+        <div class="article">
+            <span class="headline" data-id="{{_id}}"><h4>{{headline}}</h4></span>
+            <span><a href="{{link}}" target="_blank">{{summary}}</a></span>
+            <span class="comments" data-id="{{_id}}">Comment Here</span>
+            <span class="commentBox"></span>
+            <span>
+                    <textarea class="commentSpace"></textarea>
+                    <button class="submit" data-id="{{_id}}">Submit</button>
+            </span>
+        </div>
+    {{/each}}
+</div>
+
+<script src="./assets/js/app.js"></script>

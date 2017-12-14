@@ -33,6 +33,10 @@ mongoose.connect("mongodb://localhost/week18Populater", {
     useMongoClient: true
 });
 
+app.set('views', path.join(__dirname, 'views'));
+app.engine("handlebars", hbars({defaultLayout: "main"}));
+app.set("view engine", "handlebars");
+
 // Routes
 
 // A GET route for scraping the website
@@ -68,6 +72,23 @@ app.get("/scrape", function(req, res) {
         });
     });
 });
+
+//Route to grab articles from the database
+app.get("/articles", function (req, res) {
+    
+    db.Article.find({})
+        .then(function (dbArticle) {
+            res.json(dbArticle)
+        })
+        .catch(function (err) {
+            res.json(err)
+        });
+});
+
+//route to grab an article by id and it's note
+app.get("articles/:id", function (req, res) {
+    
+})
 
 
 // Start the server
