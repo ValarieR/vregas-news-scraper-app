@@ -1,19 +1,19 @@
-var express = require("express");
-var bodyParser = require("body-parser");
-var logger = require("morgan");
-var mongoose = require("mongoose");
-var path = require("path");
-var hbars = require('express-handlebars');
-var request = require("request");
-var cheerio = require("cheerio");
+const express = require("express");
+const bodyParser = require("body-parser");
+const logger = require("morgan");
+const mongoose = require("mongoose");
+const path = require("path");
+const hbars = require('express-handlebars');
+const request = require("request");
+const cheerio = require("cheerio");
 
 // Require all models
-var db = require("./models");
+const db = require("./models");
 
-var PORT = 3000;
+const PORT = 3000;
 
 // Initialize Express
-var app = express();
+const app = express();
 
 // Use morgan logger for logging requests
 app.use(logger("dev"));
@@ -30,7 +30,7 @@ mongoose.connect("mongodb://localhost/wussy", {
 });
 
 //Mongoose - success message upon database connection
-var mdb = mongoose.connection;
+const mdb = mongoose.connection;
 mdb.on('error', console.error.bind(console, 'connection error:'));
 mdb.once('open', function() {
     console.log("DB is running on local host")
@@ -45,7 +45,7 @@ app.set("view engine", "handlebars");
 // A GET route for scraping the website
 app.get("/scrape", function(req, res) {
     // First, we grab the body of the html with request
-    request("http://www.wussymag.com/", function(error, response, html) {
+    request.get("http://www.wussymag.com/", function(error, response, html) {
         // Then, we load that into cheerio and save it to $ for a shorthand selector
         var $ = cheerio.load(html);
         // Now, we grab every article by class within an article tag, and do the following:
