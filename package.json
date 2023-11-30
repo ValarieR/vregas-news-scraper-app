@@ -19,7 +19,7 @@
   "homepage": "https://github.com/ValarieR/news-scrape-app#readme",
   "dependencies": {
     "express": "^4.16.2",
-    "express-handlebars": "^3.0.0",
+    "express-handlebars": "^7.0.0",
     "mongoose": "^4.13.7",
     "body-parser": "^1.18.2",
     "cheerio": "^1.0.0-rc.2",
